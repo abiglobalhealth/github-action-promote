@@ -1,0 +1,33 @@
+name: promote
+description: promotes a selected canary environment
+inputs:
+  environment: {description: environment name, required: true}
+  AWS_ACCESS_KEY_ID_PROD: {description: prod aws access key id, required: true}
+  AWS_SECRET_ACCESS_KEY_PROD: {description: prod aws secret access key, required: true}
+  AWS_ACCESS_KEY_ID_CHINA: {description: china aws access key id, required: true}
+  AWS_SECRET_ACCESS_KEY_CHINA: {description: china aws secret access key, required: true}
+runs:
+  using: composite
+  steps:
+    - id: before-deploy
+      uses: abiglobalhealth/github-action-before-deploy@v0.0.0
+      with:
+        ref: ${{github.ref_name}}
+        environment: ${{inputs.environment}}
+
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{github.ref_name}}
+
+    - uses: abiglobalhealth/github-action-promote-any@v0.0.0
+      with:
+        environment: ${{inputs.environment}}
+        AWS_ACCESS_KEY_ID_PROD: ${{inputs.AWS_ACCESS_KEY_ID_PROD}}
+        AWS_SECRET_ACCESS_KEY_PROD: ${{inputs.AWS_SECRET_ACCESS_KEY_PROD}}
+        AWS_ACCESS_KEY_ID_CHINA: ${{inputs.AWS_ACCESS_KEY_ID_CHINA}}
+        AWS_SECRET_ACCESS_KEY_CHINA: ${{inputs.AWS_SECRET_ACCESS_KEY_CHINA}}
+
+    - uses: abiglobalhealth/github-action-after-deploy@v0.0.0
+      with:
+        environment: ${{inputs.environment}}
+        deployment_id: ${{steps.before-deploy.outputs.deployment_id}}
