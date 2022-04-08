@@ -1,4 +1,4 @@
-name: promote
+name: github-action-promote
 description: promotes a selected canary environment
 inputs:
   environment: {description: environment name, required: true}
